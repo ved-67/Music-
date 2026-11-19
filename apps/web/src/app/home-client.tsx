@@ -261,7 +261,7 @@ export default function HomePageClient() {
             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--accent)] text-white">
               <Music2 className="h-5 w-5" />
             </div>
-            <span className="text-lg font-bold tracking-tight">Together</span>
+            <span className="text-lg font-bold tracking-tight">music</span>
             <span className="rounded-full border border-[var(--border)] px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-[var(--text-muted)]">
               v0.3.1
             </span>
@@ -300,10 +300,10 @@ export default function HomePageClient() {
           <div className="mx-auto max-w-3xl text-center">
             <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--bg-secondary)]/80 px-4 py-1.5 text-sm text-[var(--text-muted)]">
               <Zap className="h-3.5 w-3.5 text-[var(--accent)]" />
-              No account needed — start in seconds
+              A shared listening space
             </p>
             <h1 className="mb-6 text-4xl font-bold leading-[1.1] tracking-tight md:text-6xl">
-              Watch and listen{" "}
+              Listen to music{" "}
               <span className="bg-gradient-to-r from-[var(--accent)] to-violet-400 bg-clip-text text-transparent">
                 together
               </span>
@@ -395,7 +395,7 @@ export default function HomePageClient() {
         <div className="mx-auto max-w-6xl px-4">
           <div className="mb-12 text-center">
             <h2 className="mb-3 text-2xl font-bold md:text-3xl">How it works</h2>
-            <p className="text-[var(--text-muted)]">Three steps to a shared listening session</p>
+            <p className="text-[var(--text-muted)]">Three steps to listening together</p>
           </div>
           <div className="grid gap-8 md:grid-cols-3">
             {STEPS.map(({ step, title, description }) => (
@@ -415,9 +415,9 @@ export default function HomePageClient() {
       <section className="py-16 md:py-24">
         <div className="mx-auto max-w-6xl px-4">
           <div className="mb-12 text-center">
-            <h2 className="mb-3 text-2xl font-bold md:text-3xl">Everything in v0.3.1</h2>
+            <h2 className="mb-3 text-2xl font-bold md:text-3xl">Everything in music</h2>
             <p className="mx-auto max-w-xl text-[var(--text-muted)]">
-              Built for group listening — sync, queues, chat, and moderation out of the box.
+              Shared listening with synchronized playback, a music queue, and room chat.
             </p>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -591,7 +591,7 @@ export default function HomePageClient() {
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-4 text-sm text-[var(--text-muted)] sm:flex-row">
           <div className="flex items-center gap-2">
             <Music2 className="h-4 w-4 text-[var(--accent)]" />
-            <span>Together v0.3.1</span>
+            <span>music</span>
           </div>
           <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1">
             <a href={personalSiteUrl} className="hover:text-[var(--text)]">
@@ -607,7 +607,7 @@ export default function HomePageClient() {
               Terms
             </Link>
             <span aria-hidden="true">·</span>
-            <span>Sync playback. Share the queue. No install required.</span>
+            <span>Listen together. Share the music.</span>
           </div>
         </div>
       </footer>
