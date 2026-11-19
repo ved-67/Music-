@@ -1,12 +1,12 @@
 {
-  "name": "Together",
-  "short_name": "Together",
+  "name": "music",
+  "short_name": "music",
   "version": "0.3.1",
-  "description": "Watch and listen together with friends",
+  "description": "A private listening space for two",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0f0f14",
-  "theme_color": "#6366f1",
+  "background_color": "#080808",
+  "theme_color": "#080808",
   "orientation": "any",
   "icons": [
     {
@@ -18,15 +18,15 @@
   ],
   "shortcuts": [
     {
-      "name": "Create room",
-      "short_name": "Create",
-      "url": "/#get-started",
+      "name": "Open music",
+      "short_name": "Open",
+      "url": "/",
       "icons": [{ "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml" }]
     },
     {
-      "name": "Join room",
-      "short_name": "Join",
-      "url": "/#get-started",
+      "name": "Listening room",
+      "short_name": "Room",
+      "url": "/",
       "icons": [{ "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml" }]
     }
   ]
