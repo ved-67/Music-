@@ -1,0 +1,48 @@
+{
+  "name": "@together/web",
+  "version": "0.3.1",
+  "private": true,
+  "scripts": {
+    "dev": "NODE_OPTIONS='--require ./scripts/load-root-env.cjs' next dev --turbopack",
+    "build": "NODE_OPTIONS='--require ./scripts/load-root-env.cjs' next build",
+    "start": "NODE_OPTIONS='--require ./scripts/load-root-env.cjs' next start",
+    "lint": "biome check --error-on-warnings .",
+    "typecheck": "tsc --noEmit",
+    "test:unit": "vitest run --passWithNoTests",
+    "test": "playwright test --project=mobile-chrome --project=chromium",
+    "test:visual": "bash scripts/visual-regression-linux.sh test",
+    "test:visual:update": "bash scripts/visual-regression-linux.sh update",
+    "test:mobile": "playwright test mobile-room.spec.ts",
+    "test:install": "playwright install --with-deps chromium firefox webkit"
+  },
+  "dependencies": {
+    "@emoji-mart/data": "^1.2.1",
+    "@emoji-mart/react": "^1.1.1",
+    "@supabase/ssr": "^0.6.1",
+    "@supabase/supabase-js": "^2.50.2",
+    "@together/db": "workspace:*",
+    "@together/shared": "workspace:*",
+    "@together/track-resolver": "workspace:*",
+    "@together/ui": "workspace:*",
+    "bcryptjs": "^3.0.2",
+    "dotenv": "^16.5.0",
+    "drizzle-orm": "^0.45.2",
+    "emoji-mart": "^5.6.0",
+    "jose": "^6.0.11",
+    "lucide-react": "^0.525.0",
+    "next": "^15.5.21",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "zod": "^3.25.67"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.53.1",
+    "@tailwindcss/postcss": "^4.1.11",
+    "@types/bcryptjs": "^3.0.0",
+    "@types/node": "^24.0.4",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "tailwindcss": "^4.1.11",
+    "typescript": "^5.8.3"
+  }
+}

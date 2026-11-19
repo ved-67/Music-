@@ -1,0 +1,52 @@
+import { expect, test } from "@playwright/test";
+import { resetRateLimitStoreForTests } from "../src/lib/rate-limit";
+import {
+  addUrlInput,
+  expectPromoteVoteBarVisible,
+  openRoomSettings,
+  promoteVoteBar,
+} from "./helpers/room";
+
+test.describe("Phase 5.1 — Democratic promote UI", () => {
+  test.beforeEach(() => {
+    resetRateLimitStoreForTests();
+  });
+
+  test("shows promote vote bar when democratic promote is enabled", async ({ browser }) => {
+    const hostContext = await browser.newContext();
+    const guestContext = await browser.newContext();
+    const hostPage = await hostContext.newPage();
+    const guestPage = await guestContext.newPage();
+
+    await hostPage.goto("/");
+    await hostPage.locator("#create-name").fill("Host");
+    await hostPage.getByRole("button", { name: "Create room" }).click();
+    await hostPage.waitForURL(/\/r\//);
+    const roomUrl = hostPage.url();
+    await expect(hostPage.getByText(/\d+ listening/)).toBeVisible({ timeout: 15000 });
+
+    await openRoomSettings(hostPage);
+    await hostPage.getByRole("switch", { name: /democratic promote/i }).click();
+    await hostPage.getByRole("button", { name: "Close settings" }).click();
+
+    await guestPage.goto(roomUrl);
+    await guestPage.getByLabel("Display name").fill("Guest");
+    await guestPage.getByRole("button", { name: "Join room" }).click();
+    await expect(guestPage.getByText(/\d+ listening/)).toBeVisible({ timeout: 15000 });
+
+    const videoUrl = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
+    await addUrlInput(guestPage).fill(videoUrl);
+    await addUrlInput(guestPage).press("Enter");
+    await expect(guestPage.getByRole("status").filter({ hasText: /Added/i })).toBeVisible({
+      timeout: 10000,
+    });
+
+    await expectPromoteVoteBarVisible(hostPage);
+    await expect(
+      promoteVoteBar(hostPage).getByRole("button", { name: "Vote to promote" }),
+    ).toBeVisible();
+
+    await hostContext.close();
+    await guestContext.close();
+  });
+});

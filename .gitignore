@@ -1,0 +1,23 @@
+node_modules
+.pnpm-store
+.turbo
+dist
+.next
+.env
+.env.prod
+.env.*.prod
+.env.local
+.env.*.local
+*.log
+*.tsbuildinfo
+.wrangler
+.dev.vars
+playwright-report
+test-results
+coverage
+.DS_Store
+.husky/pre-commit.local
+.husky/pre-push.local
+# Husky generates .husky/_/ on install (see .husky/_/.gitignore); do not commit that folder.
+# Local know-code state (per developer — not committed)
+.know-code/

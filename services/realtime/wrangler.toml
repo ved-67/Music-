@@ -1,0 +1,70 @@
+name = "together-realtime"
+main = "src/index.ts"
+compatibility_date = "2025-06-01"
+
+# ── Cloudflare Workers Git integration (dashboard) ─────────────────────────
+# Root directory:   /
+# Build command:    pnpm install --frozen-lockfile && pnpm run build:realtime
+# Deploy command:   pnpm run deploy:realtime
+# Version command:  pnpm run deploy:realtime -- --dry-run   (optional)
+# Production branch: main
+#
+# Dashboard variables (Settings → Variables and secrets):
+#   APP_URL           = https://together.chtnnhfoundation.org   (plain text)
+#   ENVIRONMENT       = production                              (plain text)
+#   ROOM_TOKEN_SECRET = <same value as Vercel>                  (secret)
+# The binding name must be ROOM_TOKEN_SECRET (not TOKEN_SECRET).
+
+# SQLite-backed DOs (required on Workers Free plan)
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["RoomDurableObject"]
+
+[durable_objects]
+bindings = [
+  { name = "ROOM", class_name = "RoomDurableObject" }
+]
+
+# Workers Analytics Engine — dataset is created on first write (see Cloudflare dashboard → Analytics).
+[[analytics_engine_datasets]]
+binding = "ANALYTICS"
+dataset = "together_realtime"
+
+[vars]
+ENVIRONMENT = "development"
+APP_URL = "http://127.0.0.1:3002"
+ROOM_TOKEN_SECRET = "test-secret"
+
+[env.production]
+name = "together-realtime-production"
+routes = [
+  { pattern = "realtime.together.chtnnhfoundation.org", custom_domain = true }
+]
+
+[env.production.durable_objects]
+bindings = [
+  { name = "ROOM", class_name = "RoomDurableObject" }
+]
+
+[env.production.vars]
+ENVIRONMENT = "production"
+APP_URL = "https://together.chtnnhfoundation.org"
+
+[[env.production.analytics_engine_datasets]]
+binding = "ANALYTICS"
+dataset = "together_realtime"
+
+[observability]
+enabled = true
+head_sampling_rate = 1
+
+[observability.logs]
+enabled = true
+head_sampling_rate = 1
+persist = true
+invocation_logs = true
+
+[observability.traces]
+enabled = true
+persist = true
+head_sampling_rate = 1

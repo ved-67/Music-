@@ -1,0 +1,33 @@
+{
+  "name": "Together",
+  "short_name": "Together",
+  "version": "0.3.1",
+  "description": "Watch and listen together with friends",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f0f14",
+  "theme_color": "#6366f1",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Create room",
+      "short_name": "Create",
+      "url": "/#get-started",
+      "icons": [{ "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml" }]
+    },
+    {
+      "name": "Join room",
+      "short_name": "Join",
+      "url": "/#get-started",
+      "icons": [{ "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml" }]
+    }
+  ]
+}
