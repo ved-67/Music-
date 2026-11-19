@@ -9,15 +9,15 @@ import { UmamiAnalytics } from "@/components/umami-analytics";
 import { absoluteUrl, siteUrl } from "@/lib/seo";
 import { getSupabasePublicConfig } from "@/lib/supabase/public-config";
 
-const title = "Together — Watch & Listen Together";
+const title = "music — Listen Together";
 const description =
-  "Create a room, sync YouTube playback with friends, build a collaborative queue, vote to skip, and chat — no account required.";
+  "A private listening space for two, with synchronized YouTube playback, shared queues, playlists, favourites and chat.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
     default: title,
-    template: "%s | Together",
+    template: "%s | music",
   },
   description,
   manifest: "/manifest.json",
@@ -30,24 +30,24 @@ export const metadata: Metadata = {
     description,
     url: absoluteUrl("/"),
     type: "website",
-    siteName: "Together",
-    images: [{ url: "/og/default.png", width: 1200, height: 630, alt: "Together" }],
+    siteName: "music",
+    images: [{ url: "/og/default.png", width: 1200, height: 630, alt: "music" }],
   },
   twitter: {
     card: "summary_large_image",
     title,
     description,
-    images: [{ url: "/og/default.png", width: 1200, height: 630, alt: "Together" }],
+    images: ["/og/default.png"],
   },
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "Together",
+    title: "music",
   },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#6366f1",
+  themeColor: "#080808",
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
@@ -64,7 +64,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <ThemeBootstrap />
           <a
             href="#main-content"
-            className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[200] focus:rounded-lg focus:bg-[var(--accent)] focus:px-4 focus:py-2 focus:text-white"
+            className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[200] focus:rounded-lg focus:bg-[var(--accent)] focus:px-4 focus:py-2 focus:text-black"
           >
             Skip to main content
           </a>
