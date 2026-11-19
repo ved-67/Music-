@@ -20,23 +20,25 @@ jobs:
         run: |
           set -euo pipefail
           git clone --depth 1 https://github.com/chtnnh/together.git /tmp/together-upstream
-          rsync -a --delete --exclude='.git' /tmp/together-upstream/ ./
+          rsync -a --delete --exclude='.git' --exclude='.github/workflows/import-together.yml' /tmp/together-upstream/ ./
           cat > README.md <<'EOF'
           # music
 
-          Private two-person synchronized music listening app, based on [Together](https://github.com/chtnnh/together).
+          Synchronized listening app based on [Together](https://github.com/chtnnh/together).
 
-          ## Upstream
-          The original project is maintained by chtnnh. Its Apache-2.0 license and attribution are retained in this repository.
+          ## Original project
+          The upstream project is maintained by chtnnh. The original Apache-2.0 license and attribution are retained.
 
-          ## Planned customization
-          - App branding: music
+          ## music customization
           - Minimal black theme
-          - Private access restricted to two approved accounts
-          - Shared listening room with synchronized playback
-          - Room chat, shared playlists, listening history, and favourites
+          - One private room for two approved people
+          - Synchronized YouTube playback
+          - Room chat
+          - Shared playlists
+          - Listening history
+          - Favourite songs
 
-          **Security status:** Two-person access restrictions are not yet implemented. Do not treat this repository or a room code as access control until server-side authentication and authorization have been added and tested.
+          **Access-control status:** The two-person server-side restriction is not implemented yet. A room code alone is not sufficient to guarantee that only two people can use the app.
           EOF
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
