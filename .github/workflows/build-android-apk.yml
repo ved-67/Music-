@@ -1,0 +1,85 @@
+name: Build music Android APK
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/build-android-apk.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build Android APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Create Capacitor Android wrapper
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p android-wrapper/www
+          cd android-wrapper
+          npm init -y
+          npm install --save-exact @capacitor/core@7 @capacitor/android@7
+          npm install --save-dev --save-exact @capacitor/cli@7
+          cat > capacitor.config.json <<'EOF'
+          {
+            "appId": "com.music.listen",
+            "appName": "music",
+            "webDir": "www",
+            "server": {
+              "url": "https://music-7qy7.vercel.app",
+              "cleartext": false,
+              "allowNavigation": [
+                "music-7qy7.vercel.app"
+              ]
+            },
+            "android": {
+              "allowMixedContent": false
+            }
+          }
+          EOF
+          cat > www/index.html <<'EOF'
+          <!doctype html>
+          <html lang="en">
+            <head>
+              <meta charset="utf-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+              <meta name="theme-color" content="#080808">
+              <title>music</title>
+            </head>
+            <body style="margin:0;background:#080808;color:#fff;font-family:system-ui,sans-serif">
+              <p style="padding:24px">Opening music…</p>
+            </body>
+          </html>
+          EOF
+          npx cap add android
+          npx cap sync android
+
+      - name: Build debug APK
+        working-directory: android-wrapper/android
+        run: ./gradlew assembleDebug --no-daemon
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: music-android-debug-apk
+          path: android-wrapper/android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          retention-days: 14
