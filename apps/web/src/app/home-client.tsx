@@ -309,8 +309,8 @@ export default function HomePageClient() {
               </span>
             </h1>
             <p className="mx-auto mb-10 max-w-2xl text-lg leading-relaxed text-[var(--text-muted)] md:text-xl">
-              Create a room, invite friends with a link, and sync YouTube playback in real time.
-              Queue music democratically, chat with emoji, and host private listening sessions.
+              Create a room, share a code with someone special, and listen to YouTube music together.
+              Build a shared queue, chat while listening, and keep your favourite moments in one place.
             </p>
             <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
               <a
