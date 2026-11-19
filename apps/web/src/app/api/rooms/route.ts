@@ -26,6 +26,13 @@ const createRoomSchema = z.object({
 });
 
 export const POST = withApiHandler("POST /api/rooms", async (log, request) => {
+  if (process.env.NODE_ENV === "production" && !process.env.DATABASE_URL?.trim()) {
+    return NextResponse.json(
+      { error: "Room storage is not configured yet. Please try again later." },
+      { status: 503 },
+    );
+  }
+
   const limited = enforceRateLimit(request, createRoomRateLimit);
   if (limited) return limited;
 
