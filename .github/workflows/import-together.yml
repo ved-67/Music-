@@ -20,7 +20,7 @@ jobs:
         run: |
           set -euo pipefail
           git clone --depth 1 https://github.com/chtnnh/together.git /tmp/together-upstream
-          rsync -a --delete --exclude='.git' --exclude='.github/workflows/import-together.yml' /tmp/together-upstream/ ./
+          rsync -a --delete --exclude='.git' --exclude='.github/' /tmp/together-upstream/ ./
           cat > README.md <<'EOF'
           # music
 
