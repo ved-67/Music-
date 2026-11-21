@@ -1,19 +1,31 @@
-# BarSense Android prototype
+# BarSense Advanced
 
-This project is isolated under `barsense-android/` so it does not overwrite the existing Music- application.
+Android floating game-assist prototype using MediaProjection, on-device pixel analysis, and AccessibilityService gestures.
+
+## Features
+- Floating AUTO ON/OFF control with live status, frame count, confidence estimate, and jump count.
+- User-approved screen capture through MediaProjection.
+- Basic moving-object tracking using frame-to-frame pixel changes.
+- Red-dominant obstacle column and vertical gap heuristics.
+- Accessibility gesture dispatch to the configured right-side tap point (default: 89% screen width, 50% height).
+- Auto mode starts OFF and is stopped when the overlay is closed.
+
+## Setup
+1. Install the debug APK.
+2. Grant **Display over other apps** permission.
+3. Enable **BarSense** under Android Accessibility settings.
+4. Tap **Start screen capture** and approve Android's system prompt.
+5. Open the target game and show the floating panel.
+6. Wait for the status to show player tracking and a detected gap. Tap **AUTO: OFF • START** to arm it. Tap STOP immediately if it behaves incorrectly.
+
+## Detection limitations
+This is a heuristic CV implementation, not a trained egg detector. It tracks moving non-red components and red-dominant columns. Games with scrolling backgrounds, particle effects, multiple moving objects, unusual obstacle colours, or different movement physics may confuse it. It has not been calibrated against a supplied game recording or verified on the actual game. The confidence percentage is a rule-based score, not a statistical probability. Auto mode must be tested cautiously and may fail to play correctly.
+
+The default tap coordinate is 89% of screen width and 50% of screen height. If the game's jump control is elsewhere, this build needs a coordinate setting/calibration UI before reliable use.
 
 ## Build
-Push changes or open Actions and run **Build BarSense APK**. The workflow uploads `BarSense-debug-apk`.
+GitHub Actions workflow: `.github/workflows/build-barsense.yml`
+Run `gradle assembleDebug` from this directory with JDK 17 and Android SDK platform 35 installed.
 
-## Current functionality
-- Android launcher screen
-- User-granted overlay permission flow
-- Floating panel with a manual test-tap button
-- User-consented MediaProjection screen-capture service
-- Accessibility gesture service
-- Diagnostic sampling of red-dominant pixels
-
-## Not implemented yet
-This is not a finished automatic game player. It does not yet robustly locate the egg when its shape and colour change, calculate the safe gap/trajectory, or automatically jump. The overlay's test tap is manual. Those features require game-frame calibration and on-device testing before automatic play can be enabled.
-
-All capture and accessibility capabilities require explicit Android user permission.
+## Inspiration and attribution
+The architecture was informed by public Android CV automation examples, including [android-cv-bot-template](https://github.com/steve1316/android-cv-bot-template) and [android-smart-clicker](https://github.com/Overlord96/android-smart-clicker). Their code was not copied into this project; their repositories did not expose an explicit repository-level license in the metadata checked during development. BarSense's vision heuristic and integration are original code for this repository.
