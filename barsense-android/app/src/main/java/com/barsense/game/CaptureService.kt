@@ -1,4 +1,5 @@
 package com.barsense.game
+
 import android.app.*
 import android.content.Intent
 import android.content.pm.ServiceInfo
@@ -16,10 +17,16 @@ class CaptureService : Service() {
     private var projection: MediaProjection? = null
     private var display: VirtualDisplay? = null
     private var reader: ImageReader? = null
+    private val vision = GameVisionEngine()
     private val projectionCallback = object : MediaProjection.Callback() {
-        override fun onStop() { stopSelf() }
+        override fun onStop() {
+            BarSenseState.captureActive = false
+            stopSelf()
+        }
     }
+
     override fun onBind(intent: Intent?): IBinder? = null
+
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val channel = "barsense_capture"
         if (Build.VERSION.SDK_INT >= 26) {
@@ -27,8 +34,8 @@ class CaptureService : Service() {
                 NotificationChannel(channel, "BarSense capture", NotificationManager.IMPORTANCE_LOW)
             )
             val notification = Notification.Builder(this, channel)
-                .setContentTitle("BarSense screen capture")
-                .setContentText("User-approved capture active")
+                .setContentTitle("BarSense vision active")
+                .setContentText("Screen analysis is running • Auto mode is user controlled")
                 .setSmallIcon(android.R.drawable.ic_menu_view).build()
             if (Build.VERSION.SDK_INT >= 29) {
                 startForeground(7, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION)
@@ -50,35 +57,34 @@ class CaptureService : Service() {
             val image = r.acquireLatestImage() ?: return@setOnImageAvailableListener
             try { analyze(image) } finally { image.close() }
         }, null)
+        BarSenseState.captureActive = true
+        BarSenseState.status = "Capture active • waiting for game motion"
         return START_NOT_STICKY
     }
+
     private fun analyze(image: Image) {
-        // Diagnostic red-pixel sampling only; no automatic tap decisions are made.
         val plane = image.planes[0]
-        val buffer = plane.buffer
-        val width = image.width
-        val height = image.height
-        val pixelStride = plane.pixelStride
-        val rowStride = plane.rowStride
-        var count = 0
-        var y = height / 4
-        while (y < height * 3 / 4) {
-            var x = 0
-            while (x < width) {
-                val index = y * rowStride + x * pixelStride
-                if (index + 2 < buffer.limit()) {
-                    val red = buffer.get(index).toInt() and 255
-                    val green = buffer.get(index + 1).toInt() and 255
-                    val blue = buffer.get(index + 2).toInt() and 255
-                    if (red > 130 && red > green * 1.35 && red > blue * 1.25) count++
-                }
-                x += 8
+        val result = vision.analyze(image.width, image.height, plane.buffer, plane.rowStride, plane.pixelStride)
+        BarSenseState.eggFound = result.eggFound
+        BarSenseState.obstacleAhead = result.obstacleAhead
+        BarSenseState.confidence = result.confidence
+        BarSenseState.status = result.status
+        BarSenseState.framesAnalyzed++
+        if (result.shouldTap && BarSenseState.autoEnabled) {
+            val x = image.width * BarSenseState.tapTargetX
+            val y = image.height * BarSenseState.tapTargetY
+            val sent = TapAccessibilityService.instance?.tap(x, y) ?: false
+            if (sent) {
+                BarSenseState.tapCount++
+                BarSenseState.status = "AUTO jump sent • confidence ${result.confidence}%"
+            } else {
+                BarSenseState.status = "Auto ready • enable BarSense Accessibility"
             }
-            y += 8
         }
-        BarSenseState.redSamples = count
     }
+
     override fun onDestroy() {
+        BarSenseState.captureActive = false
         display?.release()
         reader?.close()
         projection?.unregisterCallback(projectionCallback)
@@ -86,4 +92,16 @@ class CaptureService : Service() {
         super.onDestroy()
     }
 }
-object BarSenseState { @Volatile var redSamples = 0 }
+
+object BarSenseState {
+    @Volatile var captureActive = false
+    @Volatile var autoEnabled = false
+    @Volatile var eggFound = false
+    @Volatile var obstacleAhead = false
+    @Volatile var confidence = 0
+    @Volatile var framesAnalyzed = 0
+    @Volatile var tapCount = 0
+    @Volatile var status = "Ready"
+    @Volatile var tapTargetX = 0.89f
+    @Volatile var tapTargetY = 0.50f
+}
