@@ -10,19 +10,17 @@ import android.media.projection.MediaProjection
 import android.media.projection.MediaProjectionManager
 import android.os.Build
 import android.os.IBinder
-import java.nio.ByteBuffer
 
 class CaptureService : Service() {
     private var projection: MediaProjection? = null
     private var display: VirtualDisplay? = null
     private var reader: ImageReader? = null
-    private val engine = GameVisionEngine()
     override fun onBind(intent: Intent?): IBinder? = null
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val channel="barsense_capture"
         if (Build.VERSION.SDK_INT >= 26) {
             getSystemService(NotificationManager::class.java).createNotificationChannel(NotificationChannel(channel,"BarSense capture",NotificationManager.IMPORTANCE_LOW))
-            startForeground(7,Notification.Builder(this,channel).setContentTitle("BarSense screen analysis").setContentText("User-approved capture active").setSmallIcon(android.R.drawable.ic_menu_view).build())
+            startForeground(7,Notification.Builder(this,channel).setContentTitle("BarSense screen capture").setContentText("User-approved capture active").setSmallIcon(android.R.drawable.ic_menu_view).build())
         }
         val code=intent?.getIntExtra("resultCode",Activity.RESULT_CANCELED) ?: return START_NOT_STICKY
         @Suppress("DEPRECATION") val data=intent.getParcelableExtra<Intent>("data") ?: return START_NOT_STICKY
@@ -34,25 +32,17 @@ class CaptureService : Service() {
         return START_NOT_STICKY
     }
     private fun analyze(image: Image) {
-        val plane=image.planes[0]
-        val buffer=plane.buffer
-        val bytes=ByteArray(buffer.remaining())
-        buffer.get(bytes)
-        val result=engine.analyze(image.width,image.height,bytes,plane.pixelStride,plane.rowStride)
-        BarSenseState.update(result)
+        // Diagnostic red-pixel sampling only. No autonomous tap decisions are made.
+        val p=image.planes[0]; val b=p.buffer; val w=image.width; val h=image.height
+        val pixel=p.pixelStride; val row=p.rowStride; var count=0
+        var y=h/4
+        while(y<h*3/4) { var x=0; while(x<w) { val i=y*row+x*pixel
+            if(i+2<b.limit()) { val r=b.get(i).toInt() and 255; val g=b.get(i+1).toInt() and 255; val bl=b.get(i+2).toInt() and 255
+                if(r>130 && r>g*1.35 && r>bl*1.25) count++
+            }; x+=8
+        }; y+=8 }
+        BarSenseState.redSamples=count
     }
-    override fun onDestroy() { display?.release(); reader?.close(); projection?.stop(); engine.reset(); super.onDestroy() }
+    override fun onDestroy() { display?.release(); reader?.close(); projection?.stop(); super.onDestroy() }
 }
-object BarSenseState {
-    @Volatile var redSamples=0
-    @Volatile var status="Waiting for screen"
-    @Volatile var eggX=-1
-    @Volatile var eggY=-1
-    @Volatile var gapTop=-1
-    @Volatile var gapBottom=-1
-    @Volatile var obstacleColumns=""
-    fun update(r: GameVisionEngine.Result) {
-        eggX=r.motionX; eggY=r.motionY; gapTop=r.gapTop ?: -1; gapBottom=r.gapBottom ?: -1
-        obstacleColumns=r.barColumns.joinToString(","); status=r.status
-    }
-}
+object BarSenseState { @Volatile var redSamples=0 }
