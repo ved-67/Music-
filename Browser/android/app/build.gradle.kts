@@ -12,8 +12,10 @@ android {
         targetSdk = 35
         versionCode = 1
         versionName = "1.0.0"
-        buildConfigField("String", "SUPABASE_URL", "\"\u0024{System.getenv("SUPABASE_URL") ?: ""}\"")
-        buildConfigField("String", "SUPABASE_ANON_KEY", "\"\u0024{System.getenv("SUPABASE_ANON_KEY") ?: ""}\"")
+        val supabaseUrl = System.getenv("SUPABASE_URL") ?: ""
+        val supabaseAnonKey = System.getenv("SUPABASE_ANON_KEY") ?: ""
+        buildConfigField("String", "SUPABASE_URL", "\"$supabaseUrl\"")
+        buildConfigField("String", "SUPABASE_ANON_KEY", "\"$supabaseAnonKey\"")
     }
     buildFeatures { compose = true; buildConfig = true }
     compileOptions { sourceCompatibility = JavaVersion.VERSION_17; targetCompatibility = JavaVersion.VERSION_17 }
